@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sondage Soirée 🎉</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: #f0f4ff;
+      min-height: 100vh;
+      padding: 24px 16px 48px;
+    }
+
+    .container {
+      max-width: 580px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ── Setup banner ── */
+    #setup-banner {
+      background: #fff3cd;
+      border: 2px dashed #f0a500;
+      border-radius: 16px;
+      padding: 20px;
+      font-size: 14px;
+      color: #7a5000;
+      line-height: 1.6;
+    }
+    #setup-banner h2 { font-size: 16px; margin-bottom: 8px; }
+    #setup-banner code { background: #ffe08a; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+    #setup-banner input {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px 12px;
+      border: 1.5px solid #f0a500;
+      border-radius: 10px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      outline: none;
+    }
+    #setup-banner .setup-row { display: flex; gap: 8px; margin-top: 8px; }
+    #setup-banner .setup-row input { margin-top: 0; flex: 1; }
+
+    /* ── Cards ── */
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 2px 16px rgba(0,0,60,.07);
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: #aab;
+      margin-bottom: 14px;
+    }
+
+    /* ── Header ── */
+    .main-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #1a1a3a;
+    }
+    .main-subtitle { font-size: 14px; color: #888; margin-top: 4px; }
+
+    /* ── Name input ── */
+    .name-input {
+      width: 100%;
+      padding: 13px 16px;
+      border: 2px solid #e8eaf6;
+      border-radius: 14px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 16px;
+      outline: none;
+      transition: border-color .2s;
+      color: #1a1a3a;
+    }
+    .name-input:focus { border-color: #6c63ff; }
+    .name-input::placeholder { color: #bbb; }
+
+    /* ── Date rows ── */
+    .date-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .date-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border: 2px solid #e8eaf6;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all .15s;
+      user-select: none;
+    }
+    .date-row:hover { border-color: #c5c0ff; background: #f8f7ff; }
+    .date-row.checked { border-color: #6c63ff; background: #f0eeff; }
+
+    .checkbox {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      border: 2.5px solid #d0d0e8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 15px;
+      transition: all .15s;
+    }
+    .date-row.checked .checkbox {
+      background: #6c63ff;
+      border-color: #6c63ff;
+      color: white;
+    }
+
+    .date-label { flex: 1; font-size: 16px; font-weight: 700; color: #1a1a3a; }
+    .date-sub { font-size: 13px; color: #888; font-weight: 600; }
+
+    .vote-count {
+      font-size: 13px;
+      font-weight: 700;
+      background: #f0f0ff;
+      color: #6c63ff;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+    .vote-count.best {
+      background: #eafff0;
+      color: #28a745;
+    }
+
+    /* ── Avatars ── */
+    .avatars { display: flex; gap: -4px; }
+    .avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #e8eaf6;
+      color: #6c63ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+      border: 2px solid white;
+      margin-left: -4px;
+    }
+    .avatar:first-child { margin-left: 0; }
+
+    /* ── Button ── */
+    .btn {
+      width: 100%;
+      padding: 15px;
+      background: #6c63ff;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all .15s;
+      margin-top: 16px;
+    }
+    .btn:hover { background: #5a52e0; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { background: #c5c0ff; cursor: not-allowed; transform: none; }
+    .btn.success { background: #28a745; }
+
+    .btn-small {
+      padding: 8px 14px;
+      background: #6c63ff;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .15s;
+      white-space: nowrap;
+    }
+    .btn-small:hover { background: #5a52e0; }
+    .btn-small.danger { background: #ff5252; }
+    .btn-small.danger:hover { background: #e03e3e; }
+
+    /* ── Best banner ── */
+    .best-banner {
+      background: linear-gradient(135deg, #eafff0, #d4ffde);
+      border: 2px solid #a8e6b8;
+      border-radius: 16px;
+      padding: 16px 20px;
+      font-size: 15px;
+      color: #1a6630;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th { padding: 8px 10px; color: #aab; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; border-bottom: 2px solid #f0f0f8; }
+    td { padding: 10px 10px; border-bottom: 1px solid #f0f0f8; color: #1a1a3a; font-weight: 600; }
+    td.center { text-align: center; font-size: 18px; }
+
+    /* ── Admin ── */
+    .admin-toggle {
+      text-align: center;
+      font-size: 13px;
+      color: #bbb;
+      cursor: pointer;
+      padding: 8px;
+    }
+    .admin-toggle:hover { color: #888; }
+    #admin-section { display: none; }
+    #admin-section.open { display: block; }
+
+    .add-date-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .add-date-row input[type=date] {
+      flex: 1;
+      padding: 10px 12px;
+      border: 2px solid #e8eaf6;
+      border-radius: 12px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 15px;
+      outline: none;
+      color: #1a1a3a;
+    }
+    .add-date-row input[type=date]:focus { border-color: #6c63ff; }
+
+    .admin-date-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: #f8f8ff;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .hint { font-size: 13px; color: #bbb; text-align: center; margin-top: 8px; }
+
+    /* ── Loader ── */
+    #loader {
+      text-align: center;
+      padding: 60px 0;
+      font-size: 18px;
+      color: #888;
+    }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid #e8eaf6;
+      border-top-color: #6c63ff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-msg {
+      background: #fff0f0;
+      border: 2px solid #ffb3b3;
+      border-radius: 12px;
+      padding: 14px;
+      color: #c00;
+      font-size: 14px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- SETUP BANNER (hidden once configured) -->
+  <div id="setup-banner">
+    <h2>⚙️ Configuration initiale (à faire une seule fois)</h2>
+    <p>Pour que tes collègues puissent partager leurs réponses, tu as besoin d'un <strong>Bin ID JSONbin.io</strong> gratuit :</p>
+    <ol style="margin: 8px 0 0 16px; line-height:2">
+      <li>Va sur <a href="https://jsonbin.io" target="_blank" style="color:#7a5000">jsonbin.io</a> → crée un compte gratuit</li>
+      <li>Dashboard → <strong>API Keys</strong> → copie ta <strong>Master Key</strong></li>
+      <li>Colle-la ici ↓, puis clique <strong>"Créer le sondage"</strong></li>
+    </ol>
+    <div class="setup-row">
+      <input type="password" id="api-key-input" placeholder="$2a$10$... (ta Master Key JSONbin)" />
+      <button class="btn-small" onclick="initBin()">Créer le sondage</button>
+    </div>
+    <p style="margin-top:10px">Une fois créé, tu verras un <strong>Bin ID</strong> à coller dans le fichier pour tes collègues.<br>
+    <em>Ou si tu as déjà un Bin ID, entre-le directement ci-dessous :</em></p>
+    <div class="setup-row">
+      <input type="text" id="bin-id-input" placeholder="Bin ID existant (ex: 64f3a...)" />
+      <button class="btn-small" onclick="useBinId()">Utiliser</button>
+    </div>
+  </div>
+
+  <div id="loader" style="display:none">
+    <div class="spinner"></div>
+    Chargement...
+  </div>
+
+  <div id="main-content" style="display:none">
+
+    <!-- Header -->
+    <div class="card">
+      <div class="main-title" id="poll-title">🎉 Sondage Soirée</div>
+      <div class="main-subtitle" id="poll-subtitle">Coche les dates où tu es disponible !</div>
+    </div>
+
+    <!-- Best date -->
+    <div id="best-banner" class="best-banner" style="display:none">
+      🏆 <span id="best-text"></span>
+    </div>
+
+    <!-- Error -->
+    <div id="error-msg" class="error-msg" style="display:none"></div>
+
+    <!-- Vote form -->
+    <div class="card" id="vote-card">
+      <div class="card-title">Ton prénom</div>
+      <input class="name-input" type="text" id="name-input" placeholder="ex : Marie, Thomas..." />
+
+      <div class="card-title" style="margin-top:20px">Tes disponibilités</div>
+      <div class="date-list" id="date-list">
+        <p style="color:#bbb; font-size:14px; text-align:center; padding:16px 0">Aucune date pour l'instant…</p>
+      </div>
+
+      <button class="btn" id="submit-btn" onclick="submitVote()">✅ Envoyer mes disponibilités</button>
+      <p class="hint">Si tu as déjà voté, ta réponse sera mise à jour.</p>
+    </div>
+
+    <!-- Results table -->
+    <div class="card" id="results-card" style="display:none">
+      <div class="card-title">Récapitulatif</div>
+      <div class="table-wrap">
+        <table id="results-table"></table>
+      </div>
+    </div>
+
+    <!-- Admin toggle -->
+    <div class="admin-toggle" onclick="toggleAdmin()">⚙️ Gérer les dates (organisateur)</div>
+    <div class="card" id="admin-section">
+      <div class="card-title">Ajouter une date</div>
+      <div class="add-date-row">
+        <input type="date" id="new-date-input" />
+        <button class="btn-small" onclick="addDate()">+ Ajouter</button>
+      </div>
+      <div id="admin-date-list" style="margin-top:16px"></div>
+      <div style="margin-top:16px; padding-top:16px; border-top:2px solid #f0f0f8">
+        <div class="card-title">Titre du sondage</div>
+        <div class="add-date-row">
+          <input type="text" id="title-input" placeholder="ex: Soirée du boulot 🎉" style="flex:1;padding:10px 12px;border:2px solid #e8eaf6;border-radius:12px;font-family:'Nunito',sans-serif;font-size:15px;outline:none;color:#1a1a3a;" />
+          <button class="btn-small" onclick="updateTitle()">✓ OK</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+//  CONFIGURATION — Modifie ces deux lignes !
+// ════════════════════════════════════════════════
+const CONFIG = {
+  API_KEY: "$2a$10$AEDYJ/LZpwO1YOsS/xzgNOyZ4xuCQbDp1FQxwOxvabJ/LlvGlxWsy",       // Ta Master Key JSONbin.io
+  BIN_ID:  "",       // Ton Bin ID (après création)
+};
+// ════════════════════════════════════════════════
+
+const BASE_URL = "https://api.jsonbin.io/v3/b";
+let pollData = { title: "🎉 Sondage Soirée", subtitle: "Coche les dates où tu es disponible !", dates: [], responses: [] };
+let myVotes = {};
+
+// Auto-start if configured
+window.addEventListener('DOMContentLoaded', () => {
+  if (CONFIG.BIN_ID && CONFIG.API_KEY) {
+    document.getElementById('setup-banner').style.display = 'none';
+    loadData();
+  }
+});
+
+async function initBin() {
+  const key = document.getElementById('api-key-input').value.trim();
+  if (!key) return alert("Colle ta Master Key !");
+  try {
+    const res = await fetch(BASE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': key, 'X-Bin-Private': 'false' },
+      body: JSON.stringify(pollData)
+    });
+    const data = await res.json();
+    const binId = data.metadata?.id;
+    if (!binId) throw new Error("Erreur création");
+    alert(`✅ Ton Bin ID : ${binId}\n\nCopie-le, puis modifie le fichier HTML :\nAPI_KEY: "${key}"\nBIN_ID:  "${binId}"\n\nEnsuite publie sur GitHub Pages et partage le lien !`);
+    CONFIG.API_KEY = key;
+    CONFIG.BIN_ID = binId;
+    document.getElementById('setup-banner').style.display = 'none';
+    loadData();
+  } catch(e) {
+    alert("Erreur : " + e.message + "\nVérifie ta Master Key.");
+  }
+}
+
+function useBinId() {
+  const key = document.getElementById('api-key-input').value.trim();
+  const bin = document.getElementById('bin-id-input').value.trim();
+  if (!key || !bin) return alert("Il faut la Master Key ET le Bin ID !");
+  CONFIG.API_KEY = key;
+  CONFIG.BIN_ID = bin;
+  document.getElementById('setup-banner').style.display = 'none';
+  loadData();
+}
+
+function showLoader(v) {
+  document.getElementById('loader').style.display = v ? 'block' : 'none';
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-msg');
+  el.textContent = msg;
+  el.style.display = msg ? 'block' : 'none';
+}
+
+async function loadData() {
+  showLoader(true);
+  showError('');
+  try {
+    const res = await fetch(`${BASE_URL}/${CONFIG.BIN_ID}/latest`, {
+      headers: { 'X-Master-Key': CONFIG.API_KEY }
+    });
+    if (!res.ok) throw new Error("Impossible de charger les données (code " + res.status + ")");
+    const json = await res.json();
+    pollData = json.record;
+    document.getElementById('main-content').style.display = 'flex';
+    document.getElementById('main-content').style.flexDirection = 'column';
+    document.getElementById('main-content').style.gap = '20px';
+    render();
+  } catch(e) {
+    showError("❌ " + e.message);
+    document.getElementById('main-content').style.display = 'flex';
+  } finally {
+    showLoader(false);
+  }
+}
+
+async function saveData() {
+  const res = await fetch(`${BASE_URL}/${CONFIG.BIN_ID}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'X-Master-Key': CONFIG.API_KEY },
+    body: JSON.stringify(pollData)
+  });
+  if (!res.ok) throw new Error("Sauvegarde échouée (code " + res.status + ")");
+}
+
+function formatDate(d) {
+  return new Date(d + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+
+function capitalise(s) { return s ? s[0].toUpperCase() + s.slice(1) : s; }
+
+function getBestDate() {
+  if (!pollData.dates.length || !pollData.responses.length) return null;
+  let best = pollData.dates[0], bestCount = 0;
+  pollData.dates.forEach(d => {
+    const c = pollData.responses.filter(r => r.votes[d]).length;
+    if (c > bestCount) { bestCount = c; best = d; }
+  });
+  return { date: best, count: bestCount };
+}
+
+function render() {
+  // Title
+  document.getElementById('poll-title').textContent = pollData.title || '🎉 Sondage Soirée';
+  document.getElementById('poll-subtitle').textContent = pollData.subtitle || 'Coche les dates où tu es disponible !';
+
+  // Best date
+  const best = getBestDate();
+  const bb = document.getElementById('best-banner');
+  if (best && best.count > 0) {
+    const total = pollData.responses.length;
+    document.getElementById('best-text').textContent =
+      `Meilleure date : ${capitalise(formatDate(best.date))} — ${best.count} sur ${total} disponible${best.count > 1 ? 's' : ''}`;
+    bb.style.display = 'flex';
+  } else {
+    bb.style.display = 'none';
+  }
+
+  // Date list
+  const list = document.getElementById('date-list');
+  if (!pollData.dates.length) {
+    list.innerHTML = '<p style="color:#bbb;font-size:14px;text-align:center;padding:16px 0">Aucune date pour l\'instant…</p>';
+  } else {
+    list.innerHTML = pollData.dates.map(d => {
+      const voters = pollData.responses.filter(r => r.votes[d]);
+      const isBest = best && d === best.date && best.count > 0;
+      const isChecked = myVotes[d];
+      const avatars = voters.map(r => `<div class="avatar" title="${r.name}">${r.name[0].toUpperCase()}</div>`).join('');
+      return `
+        <div class="date-row ${isChecked ? 'checked' : ''}" onclick="toggleVote('${d}')">
+          <div class="checkbox">${isChecked ? '✓' : ''}</div>
+          <div style="flex:1">
+            <div class="date-label">${capitalise(formatDate(d))}</div>
+          </div>
+          <div class="avatars">${avatars}</div>
+          <div class="vote-count ${isBest ? 'best' : ''}">${voters.length} ✓</div>
+        </div>`;
+    }).join('');
+  }
+
+  // Results table
+  const rc = document.getElementById('results-card');
+  if (pollData.responses.length > 0 && pollData.dates.length > 0) {
+    rc.style.display = 'block';
+    const table = document.getElementById('results-table');
+    const shortDate = d => new Date(d + 'T12:00:00').toLocaleDateString('fr-FR', { day:'numeric', month:'short' });
+    const headers = ['<th style="text-align:left">Prénom</th>',
+      ...pollData.dates.map(d => `<th>${shortDate(d)}</th>`)].join('');
+    const rows = pollData.responses.map(r =>
+      `<tr><td>${r.name}</td>${pollData.dates.map(d =>
+        `<td class="center">${r.votes[d] ? '<span style="color:#28a745">✅</span>' : '<span style="color:#ddd">—</span>'}</td>`
+      ).join('')}</tr>`
+    ).join('');
+    const totals = `<tr style="background:#f8f8ff"><td style="font-weight:800;color:#888;font-size:12px">TOTAL</td>${
+      pollData.dates.map(d => {
+        const c = pollData.responses.filter(r=>r.votes[d]).length;
+        const ib = best && d === best.date && c > 0;
+        return `<td class="center" style="font-weight:800;color:${ib?'#28a745':'#aab'}">${c}</td>`;
+      }).join('')}</tr>`;
+    table.innerHTML = `<thead><tr>${headers}</tr></thead><tbody>${rows}${totals}</tbody>`;
+  } else {
+    rc.style.display = 'none';
+  }
+
+  // Admin date list
+  const adl = document.getElementById('admin-date-list');
+  adl.innerHTML = pollData.dates.length ? pollData.dates.map(d => `
+    <div class="admin-date-item">
+      <span>${capitalise(formatDate(d))}</span>
+      <button class="btn-small danger" onclick="removeDate('${d}')">✕ Retirer</button>
+    </div>`).join('') : '<p style="color:#bbb;font-size:14px">Aucune date ajoutée.</p>';
+
+  // Title input
+  document.getElementById('title-input').value = pollData.title || '';
+}
+
+function toggleVote(d) {
+  myVotes[d] = !myVotes[d];
+  render();
+}
+
+async function submitVote() {
+  const name = document.getElementById('name-input').value.trim();
+  if (!name) { alert("Entre ton prénom d'abord ! 😊"); return; }
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Envoi en cours…';
+  try {
+    await loadData(); // refresh first
+    const idx = pollData.responses.findIndex(r => r.name.toLowerCase() === name.toLowerCase());
+    const newResp = { name: name, votes: myVotes, updatedAt: new Date().toISOString() };
+    if (idx >= 0) pollData.responses[idx] = newResp;
+    else pollData.responses.push(newResp);
+    await saveData();
+    btn.classList.add('success');
+    btn.textContent = '✅ Réponse enregistrée !';
+    myVotes = {};
+    document.getElementById('name-input').value = '';
+    render();
+    setTimeout(() => {
+      btn.classList.remove('success');
+      btn.textContent = '✅ Envoyer mes disponibilités';
+      btn.disabled = false;
+    }, 3000);
+  } catch(e) {
+    showError("Erreur lors de l'envoi : " + e.message);
+    btn.textContent = '✅ Envoyer mes disponibilités';
+    btn.disabled = false;
+  }
+}
+
+async function addDate() {
+  const d = document.getElementById('new-date-input').value;
+  if (!d) return alert("Sélectionne une date !");
+  if (pollData.dates.includes(d)) return alert("Cette date est déjà dans la liste !");
+  pollData.dates = [...pollData.dates, d].sort();
+  try {
+    await saveData();
+    render();
+    document.getElementById('new-date-input').value = '';
+  } catch(e) { showError("Erreur : " + e.message); }
+}
+
+async function removeDate(d) {
+  if (!confirm(`Supprimer la date "${capitalise(formatDate(d))}" ?`)) return;
+  pollData.dates = pollData.dates.filter(x => x !== d);
+  pollData.responses = pollData.responses.map(r => { const v={...r.votes}; delete v[d]; return {...r,votes:v}; });
+  try { await saveData(); render(); } catch(e) { showError("Erreur : " + e.message); }
+}
+
+async function updateTitle() {
+  const t = document.getElementById('title-input').value.trim();
+  if (!t) return;
+  pollData.title = t;
+  try { await saveData(); render(); } catch(e) { showError("Erreur : " + e.message); }
+}
+
+function toggleAdmin() {
+  const s = document.getElementById('admin-section');
+  s.classList.toggle('open');
+}
+</script>
+</body>
+</html>
