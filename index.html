@@ -359,6 +359,11 @@
       </div>
       <div id="admin-date-list" style="margin-top:16px"></div>
       <div style="margin-top:16px; padding-top:16px; border-top:2px solid #f0f0f8">
+        <div class="card-title">Participants</div>
+        <div id="admin-participants-list"></div>
+      </div>
+
+      <div style="margin-top:16px; padding-top:16px; border-top:2px solid #f0f0f8">
         <div class="card-title">Titre du sondage</div>
         <div class="add-date-row">
           <input type="text" id="title-input" placeholder="ex: Soirée du boulot 🎉" style="flex:1;padding:10px 12px;border:2px solid #e8eaf6;border-radius:12px;font-family:'Nunito',sans-serif;font-size:15px;outline:none;color:#1a1a3a;" />
@@ -375,8 +380,8 @@
 //  CONFIGURATION — Modifie ces deux lignes !
 // ════════════════════════════════════════════════
 const CONFIG = {
-  API_KEY: "$2a$10$AEDYJ/LZpwO1YOsS/xzgNOyZ4xuCQbDp1FQxwOxvabJ/LlvGlxWsy",       // Ta Master Key JSONbin.io
-  BIN_ID:  "699f4dd8d0ea881f40d940d2",       // Ton Bin ID (après création)
+  API_KEY: "",       // Ta Master Key JSONbin.io
+  BIN_ID:  "",       // Ton Bin ID (après création)
 };
 // ════════════════════════════════════════════════
 
@@ -552,6 +557,21 @@ function render() {
       <button class="btn-small danger" onclick="removeDate('${d}')">✕ Retirer</button>
     </div>`).join('') : '<p style="color:#bbb;font-size:14px">Aucune date ajoutée.</p>';
 
+  // Admin participants list
+  const apl = document.getElementById('admin-participants-list');
+  if (pollData.responses.length) {
+    apl.innerHTML = pollData.responses.map(r => `
+      <div class="admin-date-item">
+        <span style="display:flex;align-items:center;gap:10px">
+          <span style="width:30px;height:30px;border-radius:50%;background:#f0eeff;color:#6c63ff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px">${r.name[0].toUpperCase()}</span>
+          ${r.name}
+        </span>
+        <button class="btn-small danger" onclick="removeParticipant('${r.name.replace(/'/g, "\\'")}')">✕ Retirer</button>
+      </div>`).join('');
+  } else {
+    apl.innerHTML = '<p style="color:#bbb;font-size:14px">Aucun participant pour l\'instant.</p>';
+  }
+
   // Title input
   document.getElementById('title-input').value = pollData.title || '';
 }
@@ -601,6 +621,12 @@ async function addDate() {
     render();
     document.getElementById('new-date-input').value = '';
   } catch(e) { showError("Erreur : " + e.message); }
+}
+
+async function removeParticipant(name) {
+  if (!confirm(`Supprimer la réponse de "${name}" ?`)) return;
+  pollData.responses = pollData.responses.filter(r => r.name !== name);
+  try { await saveData(); render(); } catch(e) { showError("Erreur : " + e.message); }
 }
 
 async function removeDate(d) {
