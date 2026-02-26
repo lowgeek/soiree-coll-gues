@@ -23,31 +23,6 @@
       gap: 20px;
     }
 
-    /* ── Setup banner ── */
-    #setup-banner {
-      background: #fff3cd;
-      border: 2px dashed #f0a500;
-      border-radius: 16px;
-      padding: 20px;
-      font-size: 14px;
-      color: #7a5000;
-      line-height: 1.6;
-    }
-    #setup-banner h2 { font-size: 16px; margin-bottom: 8px; }
-    #setup-banner code { background: #ffe08a; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
-    #setup-banner input {
-      width: 100%;
-      margin-top: 10px;
-      padding: 10px 12px;
-      border: 1.5px solid #f0a500;
-      border-radius: 10px;
-      font-family: 'Nunito', sans-serif;
-      font-size: 14px;
-      outline: none;
-    }
-    #setup-banner .setup-row { display: flex; gap: 8px; margin-top: 8px; }
-    #setup-banner .setup-row input { margin-top: 0; flex: 1; }
-
     /* ── Cards ── */
     .card {
       background: white;
@@ -285,26 +260,7 @@
 <body>
 <div class="container">
 
-  <!-- SETUP BANNER (hidden once configured) -->
-  <div id="setup-banner">
-    <h2>⚙️ Configuration initiale (à faire une seule fois)</h2>
-    <p>Pour que tes collègues puissent partager leurs réponses, tu as besoin d'un <strong>Bin ID JSONbin.io</strong> gratuit :</p>
-    <ol style="margin: 8px 0 0 16px; line-height:2">
-      <li>Va sur <a href="https://jsonbin.io" target="_blank" style="color:#7a5000">jsonbin.io</a> → crée un compte gratuit</li>
-      <li>Dashboard → <strong>API Keys</strong> → copie ta <strong>Master Key</strong></li>
-      <li>Colle-la ici ↓, puis clique <strong>"Créer le sondage"</strong></li>
-    </ol>
-    <div class="setup-row">
-      <input type="password" id="api-key-input" placeholder="$2a$10$... (ta Master Key JSONbin)" />
-      <button class="btn-small" onclick="initBin()">Créer le sondage</button>
-    </div>
-    <p style="margin-top:10px">Une fois créé, tu verras un <strong>Bin ID</strong> à coller dans le fichier pour tes collègues.<br>
-    <em>Ou si tu as déjà un Bin ID, entre-le directement ci-dessous :</em></p>
-    <div class="setup-row">
-      <input type="text" id="bin-id-input" placeholder="Bin ID existant (ex: 64f3a...)" />
-      <button class="btn-small" onclick="useBinId()">Utiliser</button>
-    </div>
-  </div>
+
 
   <div id="loader" style="display:none">
     <div class="spinner"></div>
@@ -389,45 +345,8 @@ const BASE_URL = "https://api.jsonbin.io/v3/b";
 let pollData = { title: "🎉 Sondage Soirée", subtitle: "Coche les dates où tu es disponible !", dates: [], responses: [] };
 let myVotes = {};
 
-// Auto-start if configured
-window.addEventListener('DOMContentLoaded', () => {
-  if (CONFIG.BIN_ID && CONFIG.API_KEY) {
-    document.getElementById('setup-banner').style.display = 'none';
-    loadData();
-  }
-});
-
-async function initBin() {
-  const key = document.getElementById('api-key-input').value.trim();
-  if (!key) return alert("Colle ta Master Key !");
-  try {
-    const res = await fetch(BASE_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Master-Key': key, 'X-Bin-Private': 'false' },
-      body: JSON.stringify(pollData)
-    });
-    const data = await res.json();
-    const binId = data.metadata?.id;
-    if (!binId) throw new Error("Erreur création");
-    alert(`✅ Ton Bin ID : ${binId}\n\nCopie-le, puis modifie le fichier HTML :\nAPI_KEY: "${key}"\nBIN_ID:  "${binId}"\n\nEnsuite publie sur GitHub Pages et partage le lien !`);
-    CONFIG.API_KEY = key;
-    CONFIG.BIN_ID = binId;
-    document.getElementById('setup-banner').style.display = 'none';
-    loadData();
-  } catch(e) {
-    alert("Erreur : " + e.message + "\nVérifie ta Master Key.");
-  }
-}
-
-function useBinId() {
-  const key = document.getElementById('api-key-input').value.trim();
-  const bin = document.getElementById('bin-id-input').value.trim();
-  if (!key || !bin) return alert("Il faut la Master Key ET le Bin ID !");
-  CONFIG.API_KEY = key;
-  CONFIG.BIN_ID = bin;
-  document.getElementById('setup-banner').style.display = 'none';
-  loadData();
-}
+// Auto-start
+window.addEventListener('DOMContentLoaded', loadData);
 
 function showLoader(v) {
   document.getElementById('loader').style.display = v ? 'block' : 'none';
